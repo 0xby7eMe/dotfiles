@@ -1,0 +1,161 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+add_newline = true
+command_timeout = 1000
+
+format = """
+[╭─](#555555)\
+[\ue0b6](#e8e8e8)\
+$os\
+$username\
+[\ue0b0](bg:#c4c4c4 fg:#e8e8e8)\
+$directory\
+[\ue0b0](bg:#9a9a9a fg:#c4c4c4)\
+$git_branch\
+$git_status\
+[\ue0b0](bg:#6e6e6e fg:#9a9a9a)\
+$c$rust$golang$nodejs$python$java$lua\
+[\ue0b0](bg:#484848 fg:#6e6e6e)\
+$docker_context$kubernetes\
+[\ue0b0](bg:#2c2c2c fg:#484848)\
+$time\
+[\ue0b0](fg:#2c2c2c)
+[╰─](#555555)$character"""
+
+right_format = """$cmd_duration$battery$memory_usage"""
+
+[os]
+disabled = false
+style = "bg:#e8e8e8 fg:#111111"
+format = "[ $symbol]($style)"
+
+[os.symbols]
+Arch = "\uf303"
+Ubuntu = "\uf31b"
+Debian = "\uf306"
+Fedora = "\uf30a"
+Linux = "\uf17c"
+Macos = "\uf179"
+Windows = "\uf17a"
+NixOS = "\uf313"
+Manjaro = "\uf312"
+EndeavourOS = "\uf322"
+
+[username]
+show_always = true
+style_user = "bg:#e8e8e8 fg:#111111 bold"
+style_root = "bg:#e8e8e8 fg:#111111 bold underline"
+format = "[ $user ]($style)"
+
+[directory]
+style = "bg:#c4c4c4 fg:#111111 bold"
+format = "[ $path ]($style)[$read_only]($read_only_style)"
+read_only = " \uf023"
+read_only_style = "bg:#c4c4c4 fg:#111111"
+truncation_length = 3
+truncation_symbol = "…/"
+truncate_to_repo = false
+
+[directory.substitutions]
+"Documents" = "docs"
+"Downloads" = "dl"
+"Projects" = "proj"
+".config" = "cfg"
+
+[git_branch]
+symbol = "\ue0a0"
+style = "bg:#9a9a9a fg:#111111 bold"
+format = "[ $symbol $branch ]($style)"
+
+[git_status]
+style = "bg:#9a9a9a fg:#111111"
+format = "[$all_status$ahead_behind ]($style)"
+conflicted = "="
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+untracked = "?${count}"
+stashed = "$${count}"
+modified = "!${count}"
+staged = "+${count}"
+renamed = "»${count}"
+deleted = "✘${count}"
+
+[c]
+symbol = "\ue61e"
+style = "bg:#6e6e6e fg:#f0f0f0"
+format = "[ $symbol ($version) ]($style)"
+
+[rust]
+symbol = "\ue7a8"
+style = "bg:#6e6e6e fg:#f0f0f0"
+format = "[ $symbol ($version) ]($style)"
+
+[golang]
+symbol = "\ue627"
+style = "bg:#6e6e6e fg:#f0f0f0"
+format = "[ $symbol ($version) ]($style)"
+
+[nodejs]
+symbol = "\ue718"
+style = "bg:#6e6e6e fg:#f0f0f0"
+format = "[ $symbol ($version) ]($style)"
+
+[python]
+symbol = "\ue73c"
+style = "bg:#6e6e6e fg:#f0f0f0"
+format = "[ $symbol ($version)(\\($virtualenv\\)) ]($style)"
+
+[java]
+symbol = "\ue738"
+style = "bg:#6e6e6e fg:#f0f0f0"
+format = "[ $symbol ($version) ]($style)"
+
+[lua]
+symbol = "\ue620"
+style = "bg:#6e6e6e fg:#f0f0f0"
+format = "[ $symbol ($version) ]($style)"
+
+[docker_context]
+symbol = "\uf308"
+style = "bg:#484848 fg:#e0e0e0"
+format = "[ $symbol $context ]($style)"
+
+[kubernetes]
+disabled = false
+symbol = "\U000F10FE"
+style = "bg:#484848 fg:#e0e0e0"
+format = "[ $symbol $context ]($style)"
+
+[time]
+disabled = false
+time_format = "%H:%M"
+style = "bg:#2c2c2c fg:#cfcfcf bold"
+format = "[ \uf017 $time ]($style)"
+
+[cmd_duration]
+min_time = 500
+style = "#aaaaaa"
+format = "[ \uf252 $duration ]($style)"
+
+[battery]
+full_symbol = "\U000F0079"
+charging_symbol = "\U000F0084"
+discharging_symbol = "\U000F007A"
+format = "[ $symbol$percentage ]($style)"
+
+[[battery.display]]
+threshold = 20
+style = "bold #ffffff"
+
+[memory_usage]
+disabled = false
+threshold = 70
+symbol = "\U000F035B"
+style = "#888888"
+format = "[ $symbol $ram_pct ]($style)"
+
+[character]
+success_symbol = "[❯](#555555)[❯](#999999)[❯](bold #ffffff)"
+error_symbol = "[❯❯❯](bold #777777)"
+vimcmd_symbol = "[❮❮❮](bold #ffffff)"

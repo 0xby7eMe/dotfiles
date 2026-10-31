@@ -1,0 +1,76 @@
+# Official-repo packages for the rice. One per line, comments allowed.
+
+# compositor + hypr ecosystem
+hyprland
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
+hyprlock
+hypridle
+hyprpicker
+hyprsunset
+hyprcursor
+hyprland-qt-support
+hyprland-guiutils
+hyprpm
+hyprpolkitagent
+
+# shell: bar, launcher, dock, notifications, OSD, lock screen
+quickshell
+qt6-svg
+qt6-imageformats
+qt6-5compat
+qt6-wayland
+qt5-wayland
+
+# hyprpm plugin build deps
+meson
+cmake
+cpio
+
+# tools used by binds and Quickshell scripts
+wl-clipboard
+cliphist
+grim
+slurp
+hyprshot
+satty
+imagemagick
+brightnessctl
+playerctl
+libnotify
+jq
+socat
+python
+
+# audio, network, bluetooth, power
+pipewire
+pipewire-pulse
+pipewire-alsa
+wireplumber
+pavucontrol
+networkmanager
+network-manager-applet
+bluez
+bluez-utils
+blueman
+power-profiles-daemon
+gnome-keyring
+
+# terminal + CLI
+kitty
+starship
+micro
+bat
+htop
+zathura
+zathura-pdf-mupdf
+
+# look: fonts, GTK base theme
+ttf-jetbrains-mono-nerd
+ttf-material-symbols-variable
+inter-font
+adw-gtk-theme
+nautilus
+xdg-user-dirs
+xdg-utils
+flatpak

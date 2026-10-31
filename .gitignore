@@ -1,0 +1,5 @@
+# app state that lands in linked config dirs
+config/micro/buffers/
+config/micro/backups/
+*.bak
+*.bak.*

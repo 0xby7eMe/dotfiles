@@ -1,0 +1,615 @@
+/*
+ * Mono
+ * Monochrome glass — matches kitty / quickshell (services/Theme.qml) / firefox.
+ * Based on TerminalGreen v2's layout, with the green swapped for white.
+ *
+ * - pure black surfaces, white hairline borders
+ * - pill buttons & search, 10px / 16px corners
+ * - Manrope for UI, JetBrains Mono for times & numbers
+ */
+
+/* ---------- Palette (Theme.qml) ---------- */
+:root {
+    --mono-bg: #000000;
+    --mono-surface: #0e0e0e;
+    --mono-surface-hi: #171717;
+    --mono-hover: #232323;
+    --mono-glass-hi: rgba(255, 255, 255, .07);
+    --mono-glass-hover: rgba(255, 255, 255, .12);
+    --mono-border: rgba(255, 255, 255, .07);
+    --mono-border-hi: rgba(255, 255, 255, .14);
+    --mono-fg: #ffffff;
+    --mono-fg-dim: #a0a0a0;
+    --mono-fg-muted: #5a5a5a;
+    --mono-radius: 16px;
+    --mono-radius-sm: 10px;
+    --mono-ease: cubic-bezier(0.2, 0, 0, 1);
+
+    --mono-font: "Manrope", sans-serif;
+    --mono-mono: "JetBrainsMono Nerd Font", "JetBrains Mono", monospace;
+
+    /* Spotify's own tokens */
+    --background-base: var(--mono-bg) !important;
+    --background-highlight: var(--mono-surface-hi) !important;
+    --background-press: var(--mono-bg) !important;
+    --background-elevated-base: var(--mono-surface) !important;
+    --background-elevated-highlight: var(--mono-surface-hi) !important;
+    --background-tinted-base: var(--mono-glass-hi) !important;
+    --background-tinted-highlight: var(--mono-glass-hover) !important;
+    --text-base: var(--mono-fg) !important;
+    --text-subdued: var(--mono-fg-dim) !important;
+    --text-bright-accent: var(--mono-fg) !important;
+    --essential-bright-accent: var(--mono-fg) !important;
+    --decorative-subdued: var(--mono-border-hi) !important;
+}
+
+::selection {
+    background: var(--mono-fg) !important;
+    color: #000 !important;
+}
+
+/* ---------- Global ---------- */
+.Root__main-view,
+.main-view-container,
+.Root__nav-bar,
+.Root__now-playing-bar,
+.Root__right-sidebar {
+    background: var(--mono-bg) !important;
+}
+
+/* panels as cards with hairline borders, like the quickshell panels */
+.Root__main-view,
+.Root__nav-bar .main-yourLibraryX-libraryContainer,
+.Root__nav-bar nav > div,
+.Root__right-sidebar > div {
+    border-radius: var(--mono-radius-sm) !important;
+}
+.Root__main-view {
+    outline: 1px solid var(--mono-border) !important;
+    outline-offset: -1px !important;
+}
+
+/* no colour-tinted header gradients — keep it black & white */
+.main-entityHeader-backgroundColor,
+.main-entityHeader-overlay,
+.main-actionBarBackground-background,
+.main-topBar-background,
+.main-home-homeHeader,
+.before-scroll-node > div > div:first-child[style*="background"] {
+    background: transparent !important;
+    background-image: none !important;
+}
+/* the bar itself stays clear so header backdrops show through; Spotify fades
+   .main-topBar-background in (inline opacity) as you scroll */
+.main-topBar-container {
+    background-color: transparent !important;
+}
+.main-topBar-background {
+    background-color: var(--mono-bg) !important;
+}
+
+/* Remove unnecessary visual noise. */
+.main-card-card,
+.main-card-card:hover {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: 0 !important;
+}
+.main-card-card {
+    border-radius: var(--mono-radius) !important;
+    transition: background-color .18s var(--mono-ease) !important;
+}
+.main-card-card:hover {
+    background: var(--mono-glass-hi) !important;
+}
+
+/* ---------- Typography ---------- */
+body,
+button,
+input,
+textarea,
+.encore-text {
+    font-family: var(--mono-font) !important;
+}
+
+/* times, counters & numbers in the terminal font */
+.playback-bar__progress-time-elapsed,
+.main-playbackBarRemainingTime-container,
+[data-testid="playback-position"],
+[data-testid="playback-duration"],
+.main-trackList-rowSectionEnd > .encore-text,
+.main-trackList-rowSectionIndex,
+.main-trackList-number {
+    font-family: var(--mono-mono) !important;
+    font-size: 12px !important;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Keep headings clean and less oversized. */
+.main-type-mesto,
+.main-type-ballad,
+.main-type-canon,
+.encore-text-headline-large,
+.encore-text-headline-medium {
+    letter-spacing: -.02em;
+}
+
+/* ---------- Sidebar ---------- */
+.main-navBar-navBarLink {
+    border-radius: var(--mono-radius-sm) !important;
+    margin: 1px 7px !important;
+}
+
+.main-navBar-navBarLink:hover,
+.main-yourLibraryX-listItem:hover,
+[data-encore-id="listRow"]:hover {
+    background: var(--mono-glass-hi) !important;
+}
+
+.main-navBar-navBarLink[aria-current="page"],
+.main-yourLibraryX-listItem [aria-selected="true"],
+[data-encore-id="listRow"][aria-selected="true"] {
+    background: var(--mono-glass-hover) !important;
+    color: var(--mono-fg) !important;
+}
+
+[data-encore-id="listRow"] {
+    border-radius: var(--mono-radius-sm) !important;
+}
+
+/* filter chips (Playlists / Artists / Albums …) */
+.main-yourLibraryX-filterArea button,
+[role="checkbox"][data-encore-id="chip"],
+button[data-encore-id="chip"],
+.ChipInner,
+[data-encore-id="chip"] > span {
+    border-radius: 999px !important;
+}
+button[data-encore-id="chip"][aria-checked="true"] > span,
+[data-encore-id="chip"][aria-checked="true"] span {
+    background: var(--mono-fg) !important;
+    color: #000 !important;
+}
+
+/* ---------- Search (pill, like the firefox urlbar) ---------- */
+.x-searchInput-searchInputInput,
+input[data-testid="search-input"],
+[data-testid="search-input"] {
+    background: var(--mono-glass-hi) !important;
+    border: 1px solid var(--mono-border) !important;
+    border-radius: 999px !important;
+    color: var(--mono-fg) !important;
+    box-shadow: none !important;
+    font-family: var(--mono-mono) !important;
+    font-size: 13px !important;
+}
+
+.x-searchInput-searchInputInput:hover,
+input[data-testid="search-input"]:hover {
+    background: var(--mono-glass-hover) !important;
+}
+
+.x-searchInput-searchInputInput:focus,
+input[data-testid="search-input"]:focus {
+    background: var(--mono-surface) !important;
+    border-color: var(--mono-border-hi) !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* ---------- Artwork ---------- */
+.main-image-image,
+.main-coverSlotCollapsed-container,
+.main-entityHeader-image,
+[data-testid="entity-image"] img,
+[data-testid="playlist-image"] img,
+.main-cardImage-imageWrapper,
+.main-cardImage-imageWrapper img {
+    border-radius: var(--mono-radius-sm) !important;
+    overflow: hidden !important;
+    transition:
+        box-shadow .18s var(--mono-ease),
+        transform .18s var(--mono-ease) !important;
+}
+
+.main-cardImage-imageWrapper,
+.main-entityHeader-image {
+    box-shadow:
+        0 0 0 1px var(--mono-border),
+        0 6px 22px rgba(0, 0, 0, .6) !important;
+}
+
+.main-cardImage-imageWrapper:hover,
+.main-entityHeader-image:hover {
+    box-shadow:
+        0 0 0 1px var(--mono-border-hi),
+        0 8px 26px rgba(0, 0, 0, .7) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Circular artist artwork remains circular. */
+.main-image-image[style*="border-radius: 50%"],
+img[style*="border-radius: 50%"],
+.main-cardImage-circular,
+.main-cardImage-circular img {
+    border-radius: 50% !important;
+}
+
+/* now-playing cover in the player bar */
+.main-nowPlayingWidget-coverArt .cover-art,
+.main-nowPlayingWidget-coverArt img {
+    border-radius: 8px !important;
+}
+
+/* ---------- Controls: white pills, black glyphs ---------- */
+.Button-buttonPrimary,
+.ButtonInner-sm-buttonPrimary,
+[data-encore-id="buttonPrimary"] > span,
+.main-playButton-PlayButton > span {
+    background: var(--mono-fg) !important;
+    color: #000 !important;
+    border-radius: 999px !important;
+    box-shadow: none !important;
+}
+
+.Button-buttonPrimary:hover,
+[data-encore-id="buttonPrimary"]:hover > span {
+    background: #e0e0e0 !important;
+    transform: none !important;
+}
+
+/* secondary / outline buttons */
+[data-encore-id="buttonSecondary"],
+.Button-buttonSecondary {
+    border-radius: 999px !important;
+    border-color: var(--mono-border-hi) !important;
+    color: var(--mono-fg) !important;
+}
+
+/* big play/pause in the player */
+.player-controls__buttons button[data-testid="control-button-playpause"] {
+    background: var(--mono-fg) !important;
+    color: #000 !important;
+}
+
+.control-button,
+.player-controls__buttons button {
+    color: var(--mono-fg-dim) !important;
+}
+.control-button:hover,
+.player-controls__buttons button:hover {
+    color: var(--mono-fg) !important;
+}
+
+/* shuffle / repeat active: white + dot */
+.control-button--active,
+.main-shuffleButton-button[aria-checked="true"],
+.main-repeatButton-button[aria-checked="true"],
+button[aria-checked="true"][data-testid^="control-button-"] {
+    color: var(--mono-fg) !important;
+}
+.control-button--active-dot::after,
+.control-button--active::after {
+    background-color: var(--mono-fg) !important;
+}
+
+/* liked / "added" check marks */
+.main-addButton-button[aria-checked="true"],
+button[aria-checked="true"].Button-sm-buttonTertiary-iconOnly {
+    color: var(--mono-fg) !important;
+}
+
+/* ---------- Progress & volume ---------- */
+.progress-bar {
+    --fg-color: var(--mono-fg) !important;
+    --bg-color: var(--mono-hover) !important;
+    --is-active-fg-color: var(--mono-fg) !important;
+    border-radius: 999px !important;
+}
+.playback-bar .progress-bar__fg,
+.volume-bar .progress-bar__fg {
+    background-color: var(--mono-fg) !important;
+}
+
+.playback-bar .progress-bar__bg,
+.playback-bar .progress-bar__slider,
+.volume-bar .progress-bar__bg {
+    background-color: var(--mono-hover) !important;
+}
+.progress-bar__slider {
+    background-color: var(--mono-fg) !important;
+}
+
+/* ---------- Selection / focus ---------- */
+button:focus-visible,
+a:focus-visible {
+    outline: 1px solid var(--mono-border-hi) !important;
+    outline-offset: 2px !important;
+}
+
+/* ---------- Rows ---------- */
+.main-trackList-trackListRow,
+[data-testid="tracklist-row"] {
+    border-radius: var(--mono-radius-sm) !important;
+}
+
+.main-trackList-trackListRow:hover,
+[data-testid="tracklist-row"]:hover {
+    background: var(--mono-glass-hi) !important;
+}
+
+.main-trackList-trackListRow[aria-selected="true"],
+[data-testid="tracklist-row"][aria-selected="true"],
+.main-trackList-selected {
+    background: var(--mono-glass-hover) !important;
+}
+
+/* currently playing track: white + bold instead of green */
+.main-trackList-playingIcon,
+.main-trackList-active .main-trackList-rowTitle,
+.main-trackList-rowTitle.main-trackList-active,
+[data-testid="tracklist-row"] [aria-current="true"],
+.main-trackList-trackListRow .encore-text[style*="essential-bright-accent"] {
+    color: var(--mono-fg) !important;
+    font-weight: 700 !important;
+}
+
+/* ---------- Menus & tooltips ---------- */
+.main-contextMenu-menu,
+[data-tippy-root] .main-contextMenu-menu,
+#context-menu ul {
+    background: var(--mono-surface) !important;
+    border: 1px solid var(--mono-border-hi) !important;
+    border-radius: var(--mono-radius-sm) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .6) !important;
+    padding: 4px !important;
+}
+.main-contextMenu-menuItemButton {
+    border-radius: 6px !important;
+}
+.main-contextMenu-menuItemButton:hover,
+.main-contextMenu-menuItemButton:focus {
+    background: var(--mono-glass-hi) !important;
+}
+.main-contextMenu-dividerAfter,
+.main-contextMenu-dividerBefore {
+    border-color: var(--mono-border) !important;
+}
+
+.main-popper-container,
+[role="tooltip"],
+.encore-inverted-light-set {
+    background: var(--mono-surface) !important;
+    color: var(--mono-fg) !important;
+    border: 1px solid var(--mono-border-hi) !important;
+    border-radius: 8px !important;
+}
+
+/* ---------- Scrollbar ---------- */
+::-webkit-scrollbar {
+    width: 7px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333 !important;
+    border-radius: 999px !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555 !important;
+}
+
+/* ---------- Reduce excessive effects ---------- */
+.main-card-card [style*="box-shadow"] {
+    box-shadow: none !important;
+}
+
+/* Keep the now-playing bar visually quiet. */
+.Root__now-playing-bar {
+    border-top: none !important;
+}
+
+/* ---------- Kill the remaining colour leaks ---------- */
+
+/* home / entity header tints (set inline from the cover colour) */
+.main-home-homeHeader,
+.main-view-container__scroll-node-child main div[style^="background-color"],
+.main-view-container__scroll-node-child > div[style*="background-color"],
+.main-view-container__scroll-node-child > div > div[style*="background-color"],
+[data-testid="home-page"] [style*="background-color: rgb"],
+[data-testid="home-page"] [style*="linear-gradient"],
+.main-entityHeader-background,
+.main-entityHeader-backgroundColor {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+/* green "now playing" equaliser → white */
+img[src*="equaliser-green"],
+img[src*="equaliser-animated-green"],
+.main-trackList-playingIcon {
+    filter: grayscale(1) brightness(3) !important;
+}
+
+/* lyrics: monochrome instead of the cover colour */
+[style*="--lyrics-color-background"],
+[data-testid="lyrics-container"],
+.Root__lyrics-cinema {
+    --lyrics-color-background: var(--mono-surface) !important;
+    --lyrics-color-active: var(--mono-fg) !important;
+    --lyrics-color-inactive: var(--mono-fg-muted) !important;
+    --lyrics-color-passed: var(--mono-fg-dim) !important;
+    --lyrics-color-messaging: var(--mono-fg-dim) !important;
+}
+[style*="--lyrics-color-background"] {
+    border: 1px solid var(--mono-border) !important;
+    border-radius: var(--mono-radius) !important;
+}
+
+/* ==========================================================================
+   Layout & glass — like firefox: frosted frame, solid content card.
+   Spotify (CEF) always paints an opaque window, so the "glass" is faked:
+   xpui/rice-wall.jpg is a symlink to ~/.config/background (quickshell keeps
+   the current wallpaper there), blurred + darkened like Hyprland's blur.
+   theme.js watches that file and swaps in changes via --mono-wall.
+   ========================================================================== */
+
+:root {
+    --panel-gap: 6px !important;               /* Theme.barGap */
+    --mono-glass: rgba(0, 0, 0, .72);          /* kitty / firefox frame */
+}
+
+/* the frame: blurred wallpaper under one layer of black glass */
+html {
+    background: var(--mono-bg) !important;
+}
+body {
+    background: transparent !important;
+}
+body::before {
+    content: "";
+    position: fixed;
+    inset: -60px;                              /* hide the blur's soft edges */
+    z-index: -1;
+    pointer-events: none;
+    background:
+        linear-gradient(var(--mono-glass), var(--mono-glass)),
+        var(--mono-wall, url("rice-wall.jpg")) center / cover no-repeat,
+        var(--mono-bg);
+    filter: blur(36px) saturate(1.17);         /* hyprland: vibrancy 0.17 */
+    transition: background-image .6s var(--mono-ease);
+}
+#main,
+.Root,
+.Root__top-container {
+    background: transparent !important;
+}
+
+/* frame regions read their surfaces from these tokens — clear them there */
+.Root__globalNav,
+.Root__nav-bar,
+.Root__right-sidebar,
+.Root__now-playing-bar {
+    --background-base: transparent !important;
+    --background-press: transparent !important;
+    --spice-main: transparent !important;
+    --spice-sidebar: transparent !important;
+    --spice-player: transparent !important;
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+/* Spotify fades text with masks built from --background-base; with that
+   cleared the masks hide the text, so drop them on the glass parts */
+.Root__globalNav *,
+.Root__nav-bar *,
+.Root__right-sidebar *,
+.Root__now-playing-bar * {
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+}
+
+/* ---------- top bar: floats on the glass ---------- */
+.Root__globalNav {
+    height: calc(44px + var(--panel-gap) * 2) !important;
+}
+.Root__globalNav button[aria-label="Home"],
+.Root__globalNav [data-testid="home-button"] {
+    background: var(--mono-glass-hi) !important;
+    border: 1px solid var(--mono-border) !important;
+}
+
+/* ---------- side panels: glass cards with hairlines ---------- */
+.Root__nav-bar > *,
+.Root__right-sidebar > div,
+.main-yourLibraryX-libraryContainer,
+.main-yourLibraryX-library {
+    background: transparent !important;
+}
+.Root__nav-bar > nav,
+.Root__nav-bar > div:first-child,
+.Root__right-sidebar > div:first-child {
+    background: rgba(255, 255, 255, .03) !important;
+    border: 1px solid var(--mono-border) !important;
+    border-radius: var(--mono-radius-sm) !important;
+    overflow: hidden !important;
+}
+
+/* now-playing view cover: bigger rounding, no frame */
+.Root__right-sidebar .main-image-image,
+.Root__right-sidebar [data-testid="cover-art-image"],
+.Root__right-sidebar video {
+    border-radius: var(--mono-radius) !important;
+}
+
+/* ---------- main view: the solid content card ---------- */
+.Root__main-view {
+    background: var(--mono-bg) !important;
+    border-radius: var(--mono-radius-sm) !important;
+    outline: 1px solid var(--mono-border) !important;
+    outline-offset: -1px !important;
+    overflow: hidden !important;
+}
+.Root__main-view .main-topBar-background {
+    background-color: var(--mono-bg) !important;
+}
+
+/* ---------- player: a floating pill, like the quickshell bar ---------- */
+.Root__now-playing-bar {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+.main-nowPlayingBar-nowPlayingBar,
+[data-testid="now-playing-bar"] {
+    min-height: 64px !important;
+    height: 64px !important;
+    margin: 0 auto !important;
+    padding: 0 18px 0 8px !important;
+    width: min(100%, 1200px) !important;
+    background: var(--mono-glass-hi) !important;
+    border: 1px solid var(--mono-border) !important;
+    border-radius: 999px !important;
+    box-sizing: border-box !important;
+}
+.main-nowPlayingBar-left .main-nowPlayingWidget-coverArt img,
+.main-nowPlayingBar-left .cover-art,
+.main-nowPlayingBar-left [data-testid="cover-art-image"] {
+    border-radius: 999px !important;  /* round "vinyl" cover in the pill */
+}
+.main-nowPlayingBar-center .player-controls__buttons {
+    margin-bottom: 2px !important;
+}
+
+/* ---------- album / playlist header: blurred cover backdrop ----------
+   theme.js sets --mono-cover + .mono-cover on the header. The backdrop
+   bleeds up under the (clear) top bar and fades out over the action bar. */
+.main-entityHeader-container.mono-cover {
+    isolation: isolate;
+}
+.main-entityHeader-container.mono-cover::before {
+    content: "";
+    position: absolute;
+    inset: -64px 0 -180px 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        linear-gradient(rgba(0, 0, 0, .35), rgba(0, 0, 0, .55)),
+        var(--mono-cover) center / cover no-repeat;
+    filter: blur(60px) saturate(1.3);
+    transform: scale(1.15);                    /* hide the blur's soft edges */
+    -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
+    animation: mono-cover-in .5s var(--mono-ease);
+}
+@keyframes mono-cover-in {
+    from { opacity: 0; }
+}
+.main-entityHeader-container.mono-cover .main-entityHeader-title,
+.main-entityHeader-container.mono-cover .main-entityHeader-headerText {
+    text-shadow: 0 1px 12px rgba(0, 0, 0, .35);
+}

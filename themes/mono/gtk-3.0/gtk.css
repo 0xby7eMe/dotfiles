@@ -1,0 +1,33 @@
+@import url("file:///usr/share/themes/adw-gtk3-dark/gtk-3.0/gtk.css");
+
+@define-color window_bg_color      #000000;
+@define-color window_fg_color      #ffffff;
+@define-color view_bg_color        #000000;
+@define-color view_fg_color        #ffffff;
+@define-color headerbar_bg_color   #0a0a0a;
+@define-color headerbar_fg_color   #ffffff;
+@define-color headerbar_border_color #333333;
+@define-color card_bg_color        #111111;
+@define-color card_fg_color        #ffffff;
+@define-color popover_bg_color     #111111;
+@define-color popover_fg_color     #ffffff;
+@define-color dialog_bg_color      #0a0a0a;
+@define-color dialog_fg_color      #ffffff;
+@define-color sidebar_bg_color     #050505;
+@define-color sidebar_fg_color     #ffffff;
+
+@define-color accent_bg_color      #ffffff;
+@define-color accent_fg_color      #000000;
+@define-color accent_color         #ffffff;
+
+@define-color destructive_bg_color #cccccc;
+@define-color destructive_fg_color #000000;
+@define-color destructive_color    #cccccc;
+@define-color success_bg_color     #aaaaaa;
+@define-color success_color        #aaaaaa;
+@define-color warning_bg_color     #bbbbbb;
+@define-color warning_color        #bbbbbb;
+@define-color error_bg_color       #cccccc;
+@define-color error_color          #cccccc;
+
+* { border-radius: 0; }

@@ -1,0 +1,10 @@
+# Optional apps, offered during install. "flatpak:" entries come from Flathub, "aur:" from the AUR.
+flatpak:org.mozilla.firefox
+flatpak:dev.zed.Zed
+keepassxc
+loupe
+papers
+gnome-calculator
+aur:vesktop-bin
+aur:spotify
+aur:spicetify-cli
