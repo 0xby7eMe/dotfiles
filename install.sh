@@ -410,6 +410,15 @@ EOF
         skip "gsettings unavailable, GTK uses settings.ini"
     fi
 
+    # Flatpak apps can't see ~/.themes or ~/.icons, so they fall back to the
+    # default light GTK theme while still getting dark mode and our gtk.css:
+    # white text on white menus (Firefox's context menu). Let them read both.
+    if command -v flatpak >/dev/null; then
+        run flatpak override --user --filesystem=~/.themes:ro --filesystem=~/.icons:ro \
+            --filesystem=xdg-data/icons:ro --filesystem=xdg-config/gtk-4.0:ro
+        ok "Flatpak apps use the GTK theme, icons and cursor"
+    fi
+
     if command -v spicetify >/dev/null && [[ -d /opt/spotify ]]; then
         if ask "theme Spotify with spicetify (Mono)?" y; then
             run sudo chmod a+wr /opt/spotify
