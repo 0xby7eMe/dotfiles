@@ -15,6 +15,7 @@ PanelWindow {
     property int maxHeight: 640
     property real contentHeight: 0
     property string ns: "qs-panel"
+    property color fill: Theme.glass
     property int keyboardMode: WlrKeyboardFocus.OnDemand
     default property alias content: body.data
     signal dismissed
@@ -70,7 +71,7 @@ PanelWindow {
             id: bg
             width: win.panelWidth
             height: Math.round(Math.min(win.contentHeight, win.maxHeight) * win.p)
-            color: Theme.glass
+            color: win.fill
             radius: Math.min(win.bottomRadius, height / 2)
             border.width: 1
             border.color: Theme.border

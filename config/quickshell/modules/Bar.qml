@@ -11,8 +11,8 @@ import qs.services
 import qs.components
 
 // Three floating pills: workspaces (left), clock (center, grows into the media
-// player on hover, the app launcher, the wallpaper picker and notification
-// popups), tray + status (right).
+// player on hover, the app launcher, the wallpaper picker, notification
+// popups and, on click, the notification center), tray + status (right).
 PanelWindow {
     id: bar
 
@@ -22,7 +22,8 @@ PanelWindow {
     readonly property bool hostsPill: ShellState.pillScreen === monitor?.name
     readonly property bool launcherHere: ShellState.launcherOpen && hostsPill
     readonly property bool wallpaperHere: ShellState.wallpaperOpen && hostsPill
-    readonly property bool pillBusy: launcherHere || wallpaperHere
+    readonly property bool dashHere: ShellState.dashOpen && hostsPill
+    readonly property bool pillBusy: launcherHere || wallpaperHere || dashHere
     readonly property bool notifHere: Notifs.count > 0 && Notifs.screen === monitor?.name
 
     screen: modelData
@@ -134,7 +135,7 @@ PanelWindow {
         readonly property string art: player?.trackArtUrl ?? ""
         readonly property bool expanded: hasMedia && !bar.pillBusy && (hover.hovered || closeDelay.running)
         readonly property string mode: bar.launcherHere ? "launcher" : bar.wallpaperHere ? "wallpaper"
-            : bar.notifHere ? "notif" : expanded ? "media" : "pill"
+            : bar.dashHere ? "dash" : bar.notifHere ? "notif" : expanded ? "media" : "pill"
 
         readonly property int expandedWidth: 460
         readonly property int expandedHeight: Theme.barHeight + 136
@@ -143,14 +144,16 @@ PanelWindow {
         readonly property int launcherMaxHeight: Theme.barHeight + 500
         readonly property int wallpaperWidth: 754   // four thumbnail columns, see WallpaperView
         readonly property int notifWidth: 420
+        readonly property int dashWidth: 680
 
         anchors.horizontalCenter: parent.horizontalCenter
         y: Theme.barGap
         width: mode === "launcher" ? launcherWidth : mode === "wallpaper" ? wallpaperWidth : mode === "notif" ? notifWidth
-            : mode === "media" ? expandedWidth : collapsedWidth
+            : mode === "dash" ? dashWidth : mode === "media" ? expandedWidth : collapsedWidth
         height: mode === "launcher" ? Theme.barHeight + Math.min(launcherLoader.height, launcherMaxHeight - Theme.barHeight)
             : mode === "wallpaper" ? Theme.barHeight + Math.min(wallpaperLoader.height, launcherMaxHeight - Theme.barHeight)
             : mode === "notif" ? Theme.barHeight + Math.min(notifLoader.height, launcherMaxHeight - Theme.barHeight)
+            : mode === "dash" ? Theme.barHeight + Math.min(dashLoader.height, launcherMaxHeight - Theme.barHeight)
             : mode === "media" ? expandedHeight : Theme.barHeight
 
         // Springs keep their velocity when the target changes mid-flight (hover
@@ -163,10 +166,12 @@ PanelWindow {
         property real launcherP: mode === "launcher" ? 1 : 0
         property real wallpaperP: mode === "wallpaper" ? 1 : 0
         property real notifP: mode === "notif" ? 1 : 0
+        property real dashP: mode === "dash" ? 1 : 0
         Behavior on mediaP { NumberAnimation { duration: center.mediaP < 0.5 ? Theme.durSlow : Theme.dur; easing.type: Easing.OutCubic } }
         Behavior on launcherP { NumberAnimation { duration: center.launcherP < 0.5 ? Theme.durSlow : Theme.dur; easing.type: Easing.OutCubic } }
         Behavior on wallpaperP { NumberAnimation { duration: center.wallpaperP < 0.5 ? Theme.durSlow : Theme.dur; easing.type: Easing.OutCubic } }
         Behavior on notifP { NumberAnimation { duration: center.notifP < 0.5 ? Theme.durSlow : Theme.dur; easing.type: Easing.OutCubic } }
+        Behavior on dashP { NumberAnimation { duration: center.dashP < 0.5 ? Theme.durSlow : Theme.dur; easing.type: Easing.OutCubic } }
 
         HoverHandler {
             id: hover
@@ -218,9 +223,10 @@ PanelWindow {
             Rectangle {
                 anchors.fill: parent
                 opacity: center.mediaP
+                // album accent pooling at the bottom
                 gradient: Gradient {
                     GradientStop { position: 0; color: "transparent" }
-                    GradientStop { position: 1; color: Qt.rgba(0, 0, 0, 0.2) }
+                    GradientStop { position: 1; color: Media.wash(0.22); Behavior on color { ColorAnimation { duration: Theme.durSlow } } }
                 }
             }
 
@@ -246,6 +252,13 @@ PanelWindow {
                     text: Qt.formatDateTime(clock.date, "HH:mm")
                     font.weight: Font.Bold
                 }
+            }
+            // the clock opens the notification center
+            MouseArea {
+                anchors.fill: topRow
+                anchors.margins: -8
+                cursorShape: Qt.PointingHandCursor
+                onClicked: ShellState.toggleDash(bar.monitor?.name ?? "")
             }
 
             // ---- launcher ----
@@ -294,6 +307,21 @@ PanelWindow {
                 height: item?.implicitHeight ?? 0
                 sourceComponent: NotificationView {
                     open: center.mode === "notif"
+                }
+            }
+
+            // ---- notification center + calendar ----
+            Loader {
+                id: dashLoader
+                width: center.dashWidth
+                anchors.horizontalCenter: parent.horizontalCenter
+                y: Theme.barHeight + (1 - center.dashP) * -16
+                active: bar.dashHere || center.dashP > 0.01
+                opacity: center.dashP
+                visible: opacity > 0.01
+                height: item?.implicitHeight ?? 0
+                sourceComponent: DashView {
+                    open: bar.dashHere
                 }
             }
 
@@ -399,7 +427,8 @@ PanelWindow {
                                 height: parent.height
                                 radius: parent.radius
                                 width: Math.max(height, parent.width * progress.ratio)
-                                color: Theme.fg
+                                color: Media.accent
+                                Behavior on color { ColorAnimation { duration: Theme.durSlow } }
                                 Behavior on width { NumberAnimation { duration: 900; easing.type: Easing.Linear } }
                             }
                         }
@@ -463,6 +492,8 @@ PanelWindow {
                             implicitHeight: 42
                             iconSize: 22
                             active: true
+                            activeColor: Media.accent
+                            activeFg: Media.accentFg
                             glyph: center.player?.isPlaying ? "pause" : "play"
                             onClicked: center.player.togglePlaying()
                         }
@@ -574,6 +605,42 @@ PanelWindow {
                             onWheel: e => trayItem.modelData.scroll(e.angleDelta.y / 120, false)
                         }
                     }
+                }
+            }
+
+            // Weather -> opens the forecast panel
+            Rectangle {
+                id: weatherBtn
+                readonly property bool open: ShellState.weatherOpen && bar.focusedScreen
+                readonly property color fgc: open ? Theme.accentFg : Theme.fg
+                visible: Weather.ready
+                anchors.verticalCenter: parent.verticalCenter
+                height: 22
+                width: weatherRow.implicitWidth + 18
+                radius: 11
+                color: open ? Theme.accent : wMouse.containsMouse ? Theme.glassHi : "transparent"
+                Behavior on color { ColorAnimation { duration: Theme.dur } }
+
+                Row {
+                    id: weatherRow
+                    anchors.centerIn: parent
+                    spacing: 6
+                    MIcon { anchors.verticalCenter: parent.verticalCenter; icon: Weather.icon; size: 15; color: weatherBtn.fgc }
+                    Txt {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: Weather.tempText
+                        font.pixelSize: 12
+                        font.weight: Font.DemiBold
+                        color: weatherBtn.fgc
+                    }
+                }
+
+                MouseArea {
+                    id: wMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: ShellState.toggleWeather()
                 }
             }
 

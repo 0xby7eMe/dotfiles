@@ -83,6 +83,7 @@ DropPanel {
         display: { name: "Display", icon: "sun", sizes: ["4x1", "2x1"] },
         sound: { name: "Sound", icon: "volume-2", sizes: ["4x1", "2x1"] },
         media: { name: "Now Playing", icon: "music", sizes: ["4x1", "2x2"] },
+        weather: { name: "Weather", icon: "cloud-sun", sizes: ["2x1", "2x2", "4x1"] },
         wifi: { name: "Wi-Fi", icon: "wifi", sizes: ["1x1", "2x1"] },
         bluetooth: { name: "Bluetooth", icon: "bluetooth", sizes: ["1x1", "2x1"] },
         airplane: { name: "Airplane Mode", icon: "plane", sizes: ["1x1", "2x1"] },
@@ -97,7 +98,7 @@ DropPanel {
         wallpaper: { name: "Wallpaper", icon: "image", sizes: ["1x1", "2x1"] },
         clipboard: { name: "Clipboard", icon: "clipboard", sizes: ["1x1", "2x1"] }
     })
-    readonly property var order: ["connectivity", "display", "sound", "media", "wifi", "bluetooth", "airplane",
+    readonly property var order: ["connectivity", "display", "sound", "media", "weather", "wifi", "bluetooth", "airplane",
         "focus", "nightlight", "caffeine", "power", "mic", "battery", "screenshot", "picker", "wallpaper", "clipboard"]
     readonly property var defaults: [
         { id: "connectivity", size: "2x2" },
@@ -485,7 +486,7 @@ DropPanel {
                         anchors.fill: parent
                         sourceComponent: del.mid === "connectivity" ? connectivityC
                             : del.mid === "display" || del.mid === "sound" ? sliderC
-                            : del.mid === "media" ? mediaC : toggleC
+                            : del.mid === "media" ? mediaC : del.mid === "weather" ? weatherC : toggleC
                     }
 
                     // --- module bodies ---
@@ -639,7 +640,8 @@ DropPanel {
                                     Rectangle {
                                         height: parent.height
                                         radius: 2
-                                        color: Theme.fg
+                                        color: Media.accent
+                                        Behavior on color { ColorAnimation { duration: Theme.durSlow } }
                                         width: parent.width * Math.min(1, (media.p?.position ?? 0) / Math.max(1, media.p?.length ?? 1))
                                     }
                                     // position isn't pushed by mpris; poll while visible
@@ -663,9 +665,135 @@ DropPanel {
                                     glyph: media.p?.isPlaying ? "pause" : "play"
                                     iconSize: 20
                                     active: true
+                                    activeColor: Media.accent
+                                    activeFg: Media.accentFg
                                     onClicked: media.p.togglePlaying()
                                 }
                                 IconButton { glyph: "next"; iconSize: 18; onClicked: media.p.next() }
+                            }
+                        }
+                    }
+
+                    Component {
+                        id: weatherC
+                        // iOS-style widget on the condition's sky; opens the weather panel
+                        ClippingRectangle {
+                            id: wx
+                            readonly property bool big: del.size === "2x2"
+                            readonly property bool wide: del.size === "4x1"
+                            readonly property var today: Weather.daily[0] ?? null
+                            radius: 20
+                            color: "transparent"
+                            border.width: 1
+                            border.color: Qt.rgba(1, 1, 1, 0.14)
+                            scale: wxMouse.pressed ? 0.97 : 1
+                            Behavior on scale { NumberAnimation { duration: Theme.durFast; easing.type: Easing.OutBack } }
+
+                            Rectangle {
+                                anchors.fill: parent
+                                opacity: 0.8
+                                gradient: Gradient {
+                                    GradientStop { position: 0; color: Weather.palette[0] }
+                                    GradientStop { position: 1; color: Weather.palette[1] }
+                                }
+                            }
+
+                            Column {
+                                x: 12
+                                y: 10
+                                spacing: -2
+                                Txt {
+                                    width: wx.width - (wx.wide ? 200 : 50)
+                                    text: Weather.place || "Weather"
+                                    font.pixelSize: 12
+                                    font.weight: Font.Bold
+                                }
+                                Txt {
+                                    text: Weather.tempText
+                                    font.pixelSize: wx.big ? 40 : 30
+                                    font.weight: Font.Light
+                                }
+                            }
+                            MIcon {
+                                anchors.right: parent.right
+                                anchors.rightMargin: 12
+                                y: 12
+                                visible: !wx.wide
+                                icon: Weather.icon
+                                size: 18
+                                color: Weather.current ? Weather.iconColor(Weather.current.code, Weather.isDay) : Theme.fg
+                            }
+                            Column {
+                                x: 12
+                                anchors.bottom: parent.bottom
+                                anchors.bottomMargin: 10
+                                visible: wx.big
+                                Txt {
+                                    text: Weather.condition
+                                    font.pixelSize: 12
+                                    font.weight: Font.DemiBold
+                                }
+                                Txt {
+                                    text: wx.today ? `H:${Weather.deg(wx.today.hi)}  L:${Weather.deg(wx.today.lo)}` : ""
+                                    font.pixelSize: 12
+                                    font.weight: Font.DemiBold
+                                    color: Qt.rgba(1, 1, 1, 0.75)
+                                }
+                            }
+                            // next hours on the wide variant
+                            Row {
+                                visible: wx.wide
+                                anchors.right: parent.right
+                                anchors.rightMargin: 8
+                                anchors.verticalCenter: parent.verticalCenter
+                                Repeater {
+                                    model: wx.wide ? Weather.hours.slice(0, 5) : []
+                                    Column {
+                                        id: hr
+                                        required property var modelData
+                                        width: 40
+                                        spacing: 2
+                                        Txt {
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            text: hr.modelData.label
+                                            font.pixelSize: 10
+                                            font.weight: Font.DemiBold
+                                            color: Qt.rgba(1, 1, 1, 0.75)
+                                        }
+                                        MIcon {
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            icon: Weather.iconFor(hr.modelData.code, hr.modelData.day)
+                                            size: 14
+                                            color: Weather.iconColor(hr.modelData.code, hr.modelData.day)
+                                        }
+                                        Txt {
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            text: Weather.deg(hr.modelData.temp)
+                                            font.pixelSize: 11
+                                            font.weight: Font.Bold
+                                        }
+                                    }
+                                }
+                            }
+                            // small variant: condition under the temperature
+                            Txt {
+                                visible: !wx.big && !wx.wide
+                                anchors.right: parent.right
+                                anchors.rightMargin: 12
+                                anchors.bottom: parent.bottom
+                                anchors.bottomMargin: 12
+                                width: wx.width / 2 - 8
+                                horizontalAlignment: Text.AlignRight
+                                text: Weather.condition
+                                font.pixelSize: 11
+                                font.weight: Font.DemiBold
+                            }
+
+                            MouseArea {
+                                id: wxMouse
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: ShellState.toggleWeather()
                             }
                         }
                     }

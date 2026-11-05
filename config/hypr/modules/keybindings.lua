@@ -16,6 +16,7 @@ hl.bind(mod .. " + A",         hl.dsp.exec_cmd(shell .. " launcher"),        { d
 hl.bind(mod .. " + Tab",       hl.dsp.exec_cmd(shell .. " overview"),        { description = "Shell: Workspace overview" })
 hl.bind(mod .. " + K",     hl.dsp.exec_cmd(shell .. " cheatsheet"),      { description = "Shell: Keyboard shortcuts" })
 hl.bind(mod .. " + S",         hl.dsp.exec_cmd(shell .. " control"),         { description = "Shell: Control center" })
+hl.bind(mod .. " + N",         hl.dsp.exec_cmd(shell .. " dash"),            { description = "Shell: Notifications + calendar" })
 hl.bind(mod .. " + V",         hl.dsp.exec_cmd(shell .. " clipboard"),       { description = "Shell: Clipboard history" })
 hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd(shell .. " wallpaper"),       { description = "Shell: Wallpaper picker" })
 hl.bind(mod .. " + CTRL + W",  hl.dsp.exec_cmd(shell .. " randomWallpaper"), { description = "Shell: Random wallpaper" })

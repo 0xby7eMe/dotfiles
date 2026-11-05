@@ -1,9 +1,9 @@
 # dotfiles
 
 Monochrome, macOS-ish Hyprland rice for Arch Linux: frosted-glass Quickshell
-shell (bar, dock, launcher, control center, notifications, OSD, lock screen,
-app switcher, overview), Hyprland in Lua, kitty, starship and a neofetch with
-the cat from [0xby7eMe](../0xby7eMe/components/tools/AsciiCat.tsx).
+shell (bar, dock, launcher, control center, notification center + calendar,
+iOS-style weather, OSD, lock screen, app switcher, overview), Hyprland in Lua,
+kitty, starship and a neofetch with the cat from [0xby7eMe](../0xby7eMe/components/tools/AsciiCat.tsx).
 
 ```sh
 git clone <this repo> ~/dev/dotfiles
@@ -32,6 +32,31 @@ It's safe to re-run; already-linked files and unchanged system files are skipped
 -n, --dry-run      print what would happen, change nothing
     --links-only   only (re)create the symlinks
     --no-packages / --no-gpu / --no-themes / --apps / --no-apps / --no-anim
+```
+
+## Shell
+
+Most of the shell is monochrome glass; colour comes from content.
+
+- **Notification center** (click the clock, or `Super+N`): the center pill grows into
+  a month calendar, a weather widget and the notification history. Popups time out
+  into the history instead of disappearing; Do Not Disturb sends them straight there.
+  The history survives Quickshell reloads.
+- **Weather** (bar chip next to the status icons): an iOS Weather-style sheet whose
+  sky follows the conditions and time of day, with frosted cards that blur it
+  (`components/FrostCard.qml`). Also on the lock screen and as a control center
+  module (add it with *Edit Controls*). Data from [Open-Meteo](https://open-meteo.com)
+  (no API key), location from your IP via ipinfo.io until you click the city name
+  and type one. Location and units are kept in `~/.local/state/quickshell`.
+- **Now playing** tints its progress bar and play button with the album cover's
+  colour (Spotify covers are cached in `~/.cache/quickshell`).
+
+```sh
+qs ipc call shell dash                 # notification center + calendar
+qs ipc call shell weather              # weather sheet
+qs ipc call weather city "Berlin"      # pin a city ("" = back to IP location)
+qs ipc call weather units imperial     # or metric
+qs ipc call weather refresh
 ```
 
 ## NVIDIA

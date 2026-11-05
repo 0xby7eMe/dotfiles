@@ -12,8 +12,10 @@ Singleton {
     property bool launcherOpen: false
     property string launcherMode: "apps"   // "apps" | "clip"
     property bool wallpaperOpen: false
-    property string pillScreen: ""         // monitor whose center pill hosts the launcher / wallpaper picker
+    property bool dashOpen: false          // notification center + calendar in the center pill
+    property string pillScreen: ""         // monitor whose center pill hosts the launcher / wallpaper picker / dash
     property bool controlOpen: false
+    property bool weatherOpen: false
     property bool overviewOpen: false
     property bool cheatsheetOpen: false
     property bool authOpen: false          // polkit prompt (set by PolkitPrompt)
@@ -49,11 +51,13 @@ Singleton {
             return;
         }
         controlOpen = false;
+        weatherOpen = false;
         overviewOpen = false;
         cheatsheetOpen = false;
-        if (!launcherOpen && !wallpaperOpen)
+        if (!launcherOpen && !wallpaperOpen && !dashOpen)
             pillScreen = focusedScreen;
         wallpaperOpen = false;
+        dashOpen = false;
         launcherMode = mode;
         launcherOpen = true;
     }
@@ -66,12 +70,34 @@ Singleton {
             return;
         }
         controlOpen = false;
+        weatherOpen = false;
         overviewOpen = false;
         cheatsheetOpen = false;
-        if (!launcherOpen)
+        if (!launcherOpen && !dashOpen)
             pillScreen = focusedScreen;
         launcherOpen = false;
+        dashOpen = false;
         wallpaperOpen = true;
+    }
+
+    // Opened from the bar's clock, so it lands on that bar's screen.
+    function toggleDash(screen: string): void {
+        if (!dashOpen && Date.now() - lastAutoClose < 250)
+            return;
+        if (dashOpen) {
+            dashOpen = false;
+            return;
+        }
+        controlOpen = false;
+        weatherOpen = false;
+        overviewOpen = false;
+        cheatsheetOpen = false;
+        if (!launcherOpen && !wallpaperOpen)
+            pillScreen = screen || focusedScreen;
+        launcherOpen = false;
+        wallpaperOpen = false;
+        dashOpen = true;
+        Notifs.clearPopups();
     }
 
     function toggleControl(): void {
@@ -79,9 +105,23 @@ Singleton {
             return;
         launcherOpen = false;
         wallpaperOpen = false;
+        dashOpen = false;
+        weatherOpen = false;
         overviewOpen = false;
         cheatsheetOpen = false;
         controlOpen = !controlOpen;
+    }
+
+    function toggleWeather(): void {
+        if (!weatherOpen && Date.now() - lastAutoClose < 250)
+            return;
+        launcherOpen = false;
+        wallpaperOpen = false;
+        dashOpen = false;
+        controlOpen = false;
+        overviewOpen = false;
+        cheatsheetOpen = false;
+        weatherOpen = !weatherOpen;
     }
 
     // Fullscreen overlays: workspace overview and keybind cheat sheet.
@@ -104,7 +144,9 @@ Singleton {
     function closeAll(): void {
         launcherOpen = false;
         wallpaperOpen = false;
+        dashOpen = false;
         controlOpen = false;
+        weatherOpen = false;
         overviewOpen = false;
         cheatsheetOpen = false;
     }
@@ -224,6 +266,12 @@ Singleton {
         }
         function control(): void {
             root.toggleControl();
+        }
+        function weather(): void {
+            root.toggleWeather();
+        }
+        function dash(): void {
+            root.toggleDash("");
         }
         function wallpaper(): void {
             root.toggleWallpaper();

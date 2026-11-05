@@ -41,6 +41,8 @@ libnotify
 jq
 socat
 python
+curl            # weather (Open-Meteo) and Spotify cover art
+rsync           # installer: themes + fonts
 
 # audio, network, bluetooth, power
 pipewire

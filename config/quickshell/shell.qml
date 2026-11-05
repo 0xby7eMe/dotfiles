@@ -26,6 +26,7 @@ ShellRoot {
     }
 
     ControlCenter {}
+    WeatherPanel {}
     Osd {}
     Overview {}
     Cheatsheet {}

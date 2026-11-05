@@ -8,6 +8,7 @@ import qs.components
 
 // Notification popups shown inside the bar's center pill, below the clock.
 // Click runs the default action, right click dismisses; hover pauses expiry.
+// Expired toasts stay in the notification center (DashView).
 Item {
     id: root
 
@@ -22,7 +23,9 @@ Item {
         height: contentHeight
         spacing: 2
         interactive: false
-        model: Notifs.list
+        model: ScriptModel {
+            values: Notifs.popups
+        }
 
         add: Transition {
             NumberAnimation { property: "opacity"; from: 0; to: 1; duration: Theme.dur }
@@ -55,7 +58,8 @@ Item {
             Timer {
                 running: root.open && !toast.critical && !toast.hovered
                 interval: (toast.modelData?.expireTimeout ?? 0) > 0 ? toast.modelData.expireTimeout : 5500
-                onTriggered: toast.modelData.expire()
+                // leaves the toast, stays in the notification center
+                onTriggered: Notifs.hidePopup(toast.modelData)
             }
 
             MouseArea {

@@ -59,7 +59,7 @@ hl.layer_rule({
 })
 hl.layer_rule({
     name  = "qs-blur",
-    match = { namespace = "^qs-(bar|dock|launcher|control|notifications|osd|traymenu|switcher)$" },
+    match = { namespace = "^qs-(bar|dock|launcher|control|weather|notifications|osd|traymenu|switcher)$" },
     blur  = true,
     ignore_alpha = 0.6,
 })

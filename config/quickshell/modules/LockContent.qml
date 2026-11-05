@@ -139,20 +139,55 @@ Item {
         }
     }
 
+    // ---------- weather ----------
+    Row {
+        id: weather
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: clockCol.bottom
+        anchors.topMargin: 4 + (1 - root.p) * 14
+        visible: Weather.ready
+        opacity: root.p
+        spacing: 8
+
+        MIcon {
+            anchors.verticalCenter: parent.verticalCenter
+            icon: Weather.icon
+            size: 20
+            color: Weather.current ? Weather.iconColor(Weather.current.code, Weather.isDay) : Theme.fg
+        }
+        Txt {
+            anchors.verticalCenter: parent.verticalCenter
+            text: Weather.tempText
+            font.pixelSize: 18
+            font.weight: Font.Bold
+            color: Qt.rgba(1, 1, 1, 0.92)
+        }
+        Txt {
+            anchors.verticalCenter: parent.verticalCenter
+            text: [Weather.condition, Weather.daily.length > 0 ? `H:${Weather.deg(Weather.daily[0].hi)}  L:${Weather.deg(Weather.daily[0].lo)}` : "", Weather.place]
+                .filter(t => t).join("   ·   ")
+            font.pixelSize: 15
+            font.weight: Font.DemiBold
+            color: Qt.rgba(1, 1, 1, 0.75)
+        }
+    }
+
     // ---------- now playing ----------
     Rectangle {
         id: media
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: clockCol.bottom
+        anchors.top: weather.visible ? weather.bottom : clockCol.bottom
         anchors.topMargin: 26 + (1 - root.p) * 20
         visible: root.player !== null && (root.player.trackTitle ?? "") !== ""
         width: 360
         height: 72
         radius: 20
-        color: Qt.rgba(1, 1, 1, 0.1)
+        // glass washed with the album's colour
+        color: Qt.tint(Qt.rgba(1, 1, 1, 0.1), Media.wash(0.16))
         border.width: 1
-        border.color: Qt.rgba(1, 1, 1, 0.14)
+        border.color: Qt.tint(Qt.rgba(1, 1, 1, 0.14), Media.wash(0.3))
         opacity: root.p
+        Behavior on color { ColorAnimation { duration: Theme.durSlow } }
 
         ClippingRectangle {
             id: art

@@ -389,6 +389,7 @@ desktop() {
     fi
     [[ -e $HOME/.config/background ]] || run cp "$DOTFILES/wallpapers/default.jpg" "$HOME/.config/background"
     ok "wallpaper (drop more into ~/.config/wallpapers, Super+Shift+W to pick)"
+    info "weather follows your IP location; click the city in the weather sheet to pin one"
 
     command -v xdg-user-dirs-update >/dev/null && run xdg-user-dirs-update
 
